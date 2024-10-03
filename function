@@ -1,0 +1,109 @@
+class InMemoryDatabase {
+    constructor() {
+        this.collections = {};
+    }
+
+ 
+    createCollection(collectionName) {
+        if (!this.collections[collectionName]) {
+            this.collections[collectionName] = [];
+            console.log(`Collection '${collectionName}' created.`);
+        } else {
+            console.log(`Collection '${collectionName}' already exists.`);
+        }
+    }
+
+
+    indexData(collectionName, excludeColumn) {
+        if (this.collections[collectionName]) {
+            const employees = [
+                { EmployeeID: "E02001", Name: "Alice", Department: "IT", Gender: "Female" },
+                { EmployeeID: "E02002", Name: "Bob", Department: "HR", Gender: "Male" },
+                { EmployeeID: "E02003", Name: "Charlie", Department: "IT", Gender: "Male" },
+                { EmployeeID: "E02004", Name: "David", Department: "Finance", Gender: "Male" }
+            ];
+            employees.forEach(emp => {
+                const indexedEmp = { ...emp };
+                delete indexedEmp[excludeColumn];
+                this.collections[collectionName].push(indexedEmp);
+            });
+            console.log(`Indexed data into collection '${collectionName}' excluding '${excludeColumn}'.`);
+        } else {
+            console.log(`Collection '${collectionName}' does not exist.`);
+        }
+    }
+
+
+    searchByColumn(collectionName, columnName, columnValue) {
+        if (this.collections[collectionName]) {
+            const results = this.collections[collectionName].filter(emp => emp[columnName] === columnValue);
+            console.log(`Search results for ${columnName} = '${columnValue}':`, results);
+            return results;
+        } else {
+            console.log(`Collection '${collectionName}' does not exist.`);
+            return [];
+        }
+    }
+
+  
+    getEmpCount(collectionName) {
+        if (this.collections[collectionName]) {
+            const count = this.collections[collectionName].length;
+            console.log(`Employee count in '${collectionName}': ${count}`);
+            return count;
+        } else {
+            console.log(`Collection '${collectionName}' does not exist.`);
+            return 0;
+        }
+    }
+
+
+    delEmpById(collectionName, employeeID) {
+        if (this.collections[collectionName]) {
+            const originalCount = this.collections[collectionName].length;
+            this.collections[collectionName] = this.collections[collectionName].filter(emp => emp.EmployeeID !== employeeID);
+            const newCount = this.collections[collectionName].length;
+            console.log(`Deleted employee ID '${employeeID}' from '${collectionName}'. Count reduced from ${originalCount} to ${newCount}.`);
+        } else {
+            console.log(`Collection '${collectionName}' does not exist.`);
+        }
+    }
+
+
+    getDepFacet(collectionName) {
+        if (this.collections[collectionName]) {
+            const departmentCount = {};
+            this.collections[collectionName].forEach(emp => {
+                if (emp.Department) {
+                    departmentCount[emp.Department] = (departmentCount[emp.Department] || 0) + 1;
+                }
+            });
+            console.log(`Department facet for collection '${collectionName}':`, departmentCount);
+            return departmentCount;
+        } else {
+            console.log(`Collection '${collectionName}' does not exist.`);
+            return {};
+        }
+    }
+}
+
+const db = new InMemoryDatabase();
+
+const v_nameCollection = 'Hash_saravanasudhan';
+const v_phoneCollection = 'Hash_4204';   
+db.createCollection(v_nameCollection);
+db.createCollection(v_phoneCollection);
+
+db.getEmpCount(v_nameCollection);
+db.indexData(v_nameCollection, 'Department');
+db.indexData(v_phoneCollection, 'Gender');
+
+db.delEmpById(v_nameCollection, 'E02003');
+db.getEmpCount(v_nameCollection);
+
+db.searchByColumn(v_nameCollection, 'Department', 'IT');
+db.searchByColumn(v_nameCollection, 'Gender', 'Male');
+db.searchByColumn(v_phoneCollection, 'Department', 'IT');
+
+db.getDepFacet(v_nameCollection);
+db.getDepFacet(v_phoneCollection);

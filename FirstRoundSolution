@@ -1,0 +1,52 @@
+#include <stdio.h>
+
+int checkPalindrome(char *str, int s, int e){
+while(s<e){
+if(str[s]!=str[e]){
+return 0;
+}
+s++;
+e--;
+}
+return 1;
+}
+
+int stringLength(char *str){
+int l=0;
+while(str[l]!='\0'){
+l++;
+}
+return l;
+}
+void longest(char *str){
+int n=stringLength(str);
+int max=1;
+int start=0;
+int i,j;
+for( i=0;i<n; i++){
+for( j=i; j<n;j++){
+if(checkPalindrome(str,i,j)){
+if(j-i+1>max){
+start=i;
+max=j-i+1;
+}
+}
+}
+}
+
+int w;
+for( w=start;w<start+max; w++){
+putchar(str[w]);
+
+}
+
+printf("\n");
+}
+
+int main()
+{
+char str[1000];
+scanf("%s",str);
+longest(str);
+return 0;
+}
